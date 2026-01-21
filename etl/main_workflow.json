@@ -1,0 +1,54 @@
+{
+  "name": "BI Project - ELT Pipeline",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "manual-trigger",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "filePath": "C:/Users/Nejra/Fakultet/PoslovnaInteligencija/Project/raw_data/data.csv"
+      },
+      "id": "read-csv",
+      "name": "Read CSV File",
+      "type": "n8n-nodes-base.readBinaryFile",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "operation": "fromFile",
+        "fileFormat": "csv",
+        "binaryPropertyName": "data",
+        "options": {"headerRow": true}
+      },
+      "id": "parse-csv",
+      "name": "Parse CSV",
+      "type": "n8n-nodes-base.spreadsheetFile",
+      "typeVersion": 2,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "table": {"mode": "name", "value": "source_raw_transactions"}
+      },
+      "credentials": {"postgres": {"id": "1", "name": "PostgreSQL"}},
+      "id": "insert-source",
+      "name": "Insert to Source",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [850, 300]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {"main": [[{"node": "Read CSV File", "type": "main", "index": 0}]]},
+    "Read CSV File": {"main": [[{"node": "Parse CSV", "type": "main", "index": 0}]]},
+    "Parse CSV": {"main": [[{"node": "Insert to Source", "type": "main", "index": 0}]]}
+  },
+  "settings": {"executionOrder": "v1"}
+}
